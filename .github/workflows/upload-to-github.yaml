@@ -1,4 +1,4 @@
-name: Publish image to Github Image Registry
+name: Upload image to Github Image Registry
 on:
   # Runs on pushes targeting the default branch
   push:
