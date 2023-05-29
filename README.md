@@ -1,4 +1,4 @@
-[![nginx 1.24.0](https://img.shields.io/badge/nginx-1.23.3-brightgreen.svg?&logo=nginx&logoColor=white&style=for-the-badge)](https://nginx.org/en/CHANGES) 
+[![nginx 1.24.0](https://img.shields.io/badge/nginx-1.24.0-brightgreen.svg?&logo=nginx&logoColor=white&style=for-the-badge)](https://nginx.org/en/CHANGES) 
 [![php 8.2.0](https://img.shields.io/badge/php--fpm-8.2.6-blue.svg?&logo=php&logoColor=white&style=for-the-badge)](https://secure.php.net/releases/8_2_0.php)
 [![License MIT](https://img.shields.io/badge/license-MIT-blue.svg?&style=for-the-badge)](https://github.com/LordMrcS/nginx-php-fpm/blob/master/LICENSE)
 
