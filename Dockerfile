@@ -8,27 +8,20 @@ ENV php_conf /etc/php/8.2/fpm/php.ini
 ENV fpm_conf /etc/php/8.2/fpm/pool.d/www.conf
 ENV COMPOSER_VERSION 2.5.8
 
-# Install Basic Requirements
-RUN buildDeps='curl gcc make autoconf libc-dev zlib1g-dev pkg-config' \
-    && set -x \
+#Installing basic requirements
+RUN set -x \
     && apt-get update \
-    && apt-get install --no-install-recommends $buildDeps --no-install-suggests -q -y gnupg2 dirmngr wget apt-transport-https lsb-release ca-certificates \
-    && \
-    NGINX_GPGKEY=573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62; \
-          found=''; \
-          for server in \
-                  ha.pool.sks-keyservers.net \
-                  hkp://keyserver.ubuntu.com:80 \
-                  hkp://p80.pool.sks-keyservers.net:80 \
-                  pgp.mit.edu \
-          ; do \
-                  echo "Fetching GPG key $NGINX_GPGKEY from $server"; \
-                  apt-key adv --batch --keyserver "$server" --keyserver-options timeout=10 --recv-keys "$NGINX_GPGKEY" && found=yes && break; \
-          done; \
-    test -z "$found" && echo >&2 "error: failed to fetch GPG key $NGINX_GPGKEY" && exit 1; \
-    echo "deb http://nginx.org/packages/debian/ bookworm nginx" >> /etc/apt/sources.list \
+    && apt-get install --no-install-recommends curl gcc make autoconf libc-dev zlib1g-dev pkg-config --no-install-suggests -q -y gnupg2 dirmngr wget apt-transport-https lsb-release ca-certificates
+#Preparing repositories
+RUN set -x \
+    && curl -O /tmp/nginx_signing.key https://nginx.org/keys/nginx_signing.key \
+    && apt-key add /tmp/nginx_signing.key \
+    && rm -rf /tmp/nginx_signing.key \
+    && echo "deb http://nginx.org/packages/debian/ bullseye nginx" >> /etc/apt/sources.list \
     && wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg \
-    && echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list \
+    && echo "deb https://packages.sury.org/php/ bookworm main" > /etc/apt/sources.list.d/php.list 
+#Installing requirements
+RUN set -x \
     && apt-get update \
     && apt-get install --no-install-recommends --no-install-suggests -q -y \
             apt-utils \
@@ -68,7 +61,8 @@ RUN buildDeps='curl gcc make autoconf libc-dev zlib1g-dev pkg-config' \
     && echo "#!/bin/sh\nexit 0" > /usr/sbin/policy-rc.d \
     && rm -rf /etc/nginx/conf.d/default.conf 
 # Apply Configs
-RUN sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" ${php_conf} \
+RUN set -x \
+    && sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" ${php_conf} \
     && sed -i -e "s/memory_limit\s*=\s*.*/memory_limit = 256M/g" ${php_conf} \
     && sed -i -e "s/upload_max_filesize\s*=\s*2M/upload_max_filesize = 100M/g" ${php_conf} \
     && sed -i -e "s/post_max_size\s*=\s*8M/post_max_size = 100M/g" ${php_conf} \
@@ -92,13 +86,15 @@ RUN sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" ${php_conf} \
     && ln -sf /etc/php/8.2/mods-available/imagick.ini /etc/php/8.2/fpm/conf.d/20-imagick.ini \
     && ln -sf /etc/php/8.2/mods-available/imagick.ini /etc/php/8.2/cli/conf.d/20-imagick.ini 
 # Install Composer
-RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
+RUN set -x \
+    && curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
     && curl -o /tmp/composer-setup.sig https://composer.github.io/installer.sig \
     && php -r "if (hash('SHA384', file_get_contents('/tmp/composer-setup.php')) !== trim(file_get_contents('/tmp/composer-setup.sig'))) { unlink('/tmp/composer-setup.php'); echo 'Invalid installer' . PHP_EOL; exit(1); }" \
     && php /tmp/composer-setup.php --no-ansi --install-dir=/usr/local/bin --filename=composer --version=${COMPOSER_VERSION} \
     && rm -rf /tmp/composer-setup.php
 # Clean up
-RUN rm -rf /tmp/pear \
+RUN set -x \
+    && rm -rf /tmp/pear \
     && apt-get purge -y --auto-remove $buildDeps \
     && apt-get clean \
     && apt-get autoremove \
