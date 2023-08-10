@@ -1,7 +1,5 @@
 FROM debian:bookworm-slim
 
-LABEL maintainer="Colin Wilson colin@wyveo.com"
-
 # Let the container know that there is no tty
 ENV DEBIAN_FRONTEND noninteractive
 ENV NGINX_VERSION   1.24.0
@@ -68,8 +66,9 @@ RUN buildDeps='curl gcc make autoconf libc-dev zlib1g-dev pkg-config' \
     && pip install supervisor \
     && pip install git+https://github.com/coderanger/supervisor-stdout \
     && echo "#!/bin/sh\nexit 0" > /usr/sbin/policy-rc.d \
-    && rm -rf /etc/nginx/conf.d/default.conf \
-    && sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" ${php_conf} \
+    && rm -rf /etc/nginx/conf.d/default.conf 
+# Apply Configs
+RUN sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" ${php_conf} \
     && sed -i -e "s/memory_limit\s*=\s*.*/memory_limit = 256M/g" ${php_conf} \
     && sed -i -e "s/upload_max_filesize\s*=\s*2M/upload_max_filesize = 100M/g" ${php_conf} \
     && sed -i -e "s/post_max_size\s*=\s*8M/post_max_size = 100M/g" ${php_conf} \
@@ -91,19 +90,20 @@ RUN buildDeps='curl gcc make autoconf libc-dev zlib1g-dev pkg-config' \
     && ln -sf /etc/php/8.2/mods-available/memcached.ini /etc/php/8.2/fpm/conf.d/20-memcached.ini \
     && ln -sf /etc/php/8.2/mods-available/memcached.ini /etc/php/8.2/cli/conf.d/20-memcached.ini \
     && ln -sf /etc/php/8.2/mods-available/imagick.ini /etc/php/8.2/fpm/conf.d/20-imagick.ini \
-    && ln -sf /etc/php/8.2/mods-available/imagick.ini /etc/php/8.2/cli/conf.d/20-imagick.ini \
-    # Install Composer
-    && curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
+    && ln -sf /etc/php/8.2/mods-available/imagick.ini /etc/php/8.2/cli/conf.d/20-imagick.ini 
+# Install Composer
+RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
     && curl -o /tmp/composer-setup.sig https://composer.github.io/installer.sig \
     && php -r "if (hash('SHA384', file_get_contents('/tmp/composer-setup.php')) !== trim(file_get_contents('/tmp/composer-setup.sig'))) { unlink('/tmp/composer-setup.php'); echo 'Invalid installer' . PHP_EOL; exit(1); }" \
     && php /tmp/composer-setup.php --no-ansi --install-dir=/usr/local/bin --filename=composer --version=${COMPOSER_VERSION} \
-    && rm -rf /tmp/composer-setup.php \
-    # Clean up
-    && rm -rf /tmp/pear \
+    && rm -rf /tmp/composer-setup.php
+# Clean up
+RUN rm -rf /tmp/pear \
     && apt-get purge -y --auto-remove $buildDeps \
     && apt-get clean \
     && apt-get autoremove \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /var/lib/apt/cache/*
 
 # Supervisor config
 COPY ./supervisord.conf /etc/supervisord.conf
