@@ -17,7 +17,7 @@ RUN set -x \
     && curl -O /tmp/nginx_signing.key https://nginx.org/keys/nginx_signing.key \
     && apt-key add /tmp/nginx_signing.key \
     && rm -rf /tmp/nginx_signing.key \
-    && echo "deb http://nginx.org/packages/debian/ bullseye nginx" >> /etc/apt/sources.list \
+    && echo "deb http://nginx.org/packages/debian/ bullseye nginx" >> /etc/apt/sources.list.d/nginx.list \
     && wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg \
     && echo "deb https://packages.sury.org/php/ bookworm main" > /etc/apt/sources.list.d/php.list 
 #Installing requirements
