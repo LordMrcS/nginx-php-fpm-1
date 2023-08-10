@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8
+#original source: https://github.com/coderanger/supervisor-stdout
 
 from __future__ import print_function
 import sys
