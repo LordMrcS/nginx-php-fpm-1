@@ -1,14 +1,14 @@
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 
 LABEL maintainer="Colin Wilson colin@wyveo.com"
 
 # Let the container know that there is no tty
 ENV DEBIAN_FRONTEND noninteractive
-ENV NGINX_VERSION   1.24.0
-ENV PKG_RELEASE     1~bullseye
+ENV NGINX_VERSION   1.25.0
+ENV PKG_RELEASE     1~bookworm
 ENV php_conf /etc/php/8.2/fpm/php.ini
 ENV fpm_conf /etc/php/8.2/fpm/pool.d/www.conf
-ENV COMPOSER_VERSION 2.5.7
+ENV COMPOSER_VERSION 2.5.8
 
 # Install Basic Requirements
 RUN buildDeps='curl gcc make autoconf libc-dev zlib1g-dev pkg-config' \
@@ -28,7 +28,7 @@ RUN buildDeps='curl gcc make autoconf libc-dev zlib1g-dev pkg-config' \
                   apt-key adv --batch --keyserver "$server" --keyserver-options timeout=10 --recv-keys "$NGINX_GPGKEY" && found=yes && break; \
           done; \
     test -z "$found" && echo >&2 "error: failed to fetch GPG key $NGINX_GPGKEY" && exit 1; \
-    echo "deb http://nginx.org/packages/debian/ bullseye nginx" >> /etc/apt/sources.list \
+    echo "deb http://nginx.org/packages/debian/ bookworm nginx" >> /etc/apt/sources.list \
     && wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg \
     && echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list \
     && apt-get update \
