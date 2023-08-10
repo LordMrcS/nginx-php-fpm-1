@@ -15,7 +15,6 @@ on:
   pull_request:
     branches: ["master"]
     paths-ignore:
-     - ".github/**"
      - "**.md"
   workflow_dispatch:
 
