@@ -11,15 +11,13 @@ ENV COMPOSER_VERSION 2.5.8
 #Installing base requirements
 RUN set -x \
     && apt-get update \
-    && apt-get install --no-install-recommends curl gcc make autoconf libc-dev zlib1g-dev pkg-config --no-install-suggests -q -y gnupg2 dirmngr wget apt-transport-https lsb-release ca-certificates
+    && apt-get install --no-install-recommends curl gcc make autoconf libc-dev zlib1g-dev pkg-config --no-install-suggests -q -y gnupg2 dirmngr wget apt-transport-https lsb-release ca-certificates \
 # Preparing external repositories
-RUN set -x \
     && wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg \
     && echo "deb https://packages.sury.org/nginx/ bookworm main" >> /etc/apt/sources.list.d/nginx.list \
     && wget -O /etc/apt/trusted.gpg.d/nginx.gpg https://packages.sury.org/nginx/apt.gpg \
-    && echo "deb https://packages.sury.org/php/ bookworm main" > /etc/apt/sources.list.d/php.list 
+    && echo "deb https://packages.sury.org/php/ bookworm main" > /etc/apt/sources.list.d/php.list \
 # Installing requirements
-RUN set -x \
     && apt-get update \
     && apt-get install --no-install-recommends --no-install-suggests -q -y \
             apt-utils \
@@ -51,16 +49,14 @@ RUN set -x \
             php${PHP_V}-xml \
             php${PHP_V}-ldap \
             php-pear \
-    && pecl -d php_suffix=${PHP_V} install -o -f redis memcached
+    && pecl -d php_suffix=${PHP_V} install -o -f redis memcached \
 # Installing PHP requirements
-RUN set -x \
     && mkdir -p /run/php \
     && apt-get install python3-wheel \
     && apt-get install supervisor \
     && echo "#!/bin/sh\nexit 0" > /usr/sbin/policy-rc.d \
-    && rm -rf /etc/nginx/sites-enabled/default
+    && rm -rf /etc/nginx/sites-enabled/default \
 # Apply Configs
-RUN set -x \
     && sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" ${php_conf} \
     && sed -i -e "s/memory_limit\s*=\s*.*/memory_limit = 256M/g" ${php_conf} \
     && sed -i -e "s/upload_max_filesize\s*=\s*2M/upload_max_filesize = 100M/g" ${php_conf} \
@@ -82,16 +78,14 @@ RUN set -x \
     && ln -sf /etc/php/${PHP_V}/mods-available/memcached.ini /etc/php/${PHP_V}/fpm/conf.d/20-memcached.ini \
     && ln -sf /etc/php/${PHP_V}/mods-available/memcached.ini /etc/php/${PHP_V}/cli/conf.d/20-memcached.ini \
     && ln -sf /etc/php/${PHP_V}/mods-available/imagick.ini /etc/php/${PHP_V}/fpm/conf.d/20-imagick.ini \
-    && ln -sf /etc/php/${PHP_V}/mods-available/imagick.ini /etc/php/${PHP_V}/cli/conf.d/20-imagick.ini 
+    && ln -sf /etc/php/${PHP_V}/mods-available/imagick.ini /etc/php/${PHP_V}/cli/conf.d/20-imagick.ini \
 # Install Composer
-RUN set -x \
     && curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
     && curl -o /tmp/composer-setup.sig https://composer.github.io/installer.sig \
     && php -r "if (hash('SHA384', file_get_contents('/tmp/composer-setup.php')) !== trim(file_get_contents('/tmp/composer-setup.sig'))) { unlink('/tmp/composer-setup.php'); echo 'Invalid installer' . PHP_EOL; exit(1); }" \
     && php /tmp/composer-setup.php --no-ansi --install-dir=/usr/local/bin --filename=composer --version=${COMPOSER_VERSION} \
-    && rm -rf /tmp/composer-setup.php
+    && rm -rf /tmp/composer-setup.php \
 # Clean up
-RUN set -x \
     && rm -rf /tmp/pear \
     && apt-get purge -y --auto-remove $buildDeps \
     && apt-get clean \
