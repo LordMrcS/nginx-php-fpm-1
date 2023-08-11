@@ -1,5 +1,5 @@
 [![nginx 1.25.1](https://img.shields.io/badge/nginx-1.25.1-brightgreen.svg?&logo=nginx&logoColor=white&style=for-the-badge)](https://nginx.org/en/CHANGES) 
-[![php 8.2.8](https://img.shields.io/badge/php--fpm-8.2.8-blue.svg?&logo=php&logoColor=white&style=for-the-badge)](https://secure.php.net/releases/8_2_8.php)
+[![php 8.2.8](https://img.shields.io/badge/php--fpm-8.2.8-blue.svg?&logo=php&logoColor=white&style=for-the-badge)](https://www.php.net/ChangeLog-8.php#8.2.8)
 [![License MIT](https://img.shields.io/badge/license-MIT-blue.svg?&style=for-the-badge)](https://github.com/LordMrcS/nginx-php-fpm/blob/master/LICENSE)
 
 ## Introduction
