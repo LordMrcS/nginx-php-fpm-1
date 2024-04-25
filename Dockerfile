@@ -1,4 +1,4 @@
-FROM debian:bookworm-slim
+FROM debian:12.5-slim
 
 # Let the container know that there is no tty
 ENV DEBIAN_FRONTEND noninteractive
