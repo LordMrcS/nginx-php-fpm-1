@@ -73,3 +73,11 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          
+      - name: Delete old packages
+        uses: actions/delete-package-versions@v5
+        with: 
+          package-name: 'nginx-php-fpm'
+          package-type: 'container'
+          min-versions-to-keep: 4
+          delete-only-untagged-versions: 'true'
