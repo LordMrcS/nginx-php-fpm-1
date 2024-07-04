@@ -2,11 +2,11 @@ FROM debian:12.6-slim
 
 # Let the container know that there is no tty
 ENV DEBIAN_FRONTEND noninteractive
-ENV NGINX_VERSION 1.25.1
-ENV PHP_V 8.2
-ENV php_conf /etc/php/8.2/fpm/php.ini
-ENV fpm_conf /etc/php/8.2/fpm/pool.d/www.conf
-ENV COMPOSER_VERSION 2.5.8
+ENV NGINX_VERSION 1.26.1
+ENV PHP_V 8.3
+ENV php_conf /etc/php/${PHP_V}/fpm/php.ini
+ENV fpm_conf /etc/php/${PHP_V}/fpm/pool.d/www.conf
+ENV COMPOSER_VERSION 2.7.7
 
 #Installing base requirements
 RUN set -x \
